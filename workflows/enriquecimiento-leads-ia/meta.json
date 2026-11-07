@@ -1,0 +1,21 @@
+{
+  "title": "Enriquecimiento y calificación de leads con IA",
+  "platform": "n8n",
+  "category": "Ventas",
+  "summary": "Cada mañana revisa los leads nuevos, investiga su empresa y les asigna una puntuación con OpenAI.",
+  "description": "Se ejecuta a diario a las 8:00. Toma los contactos de HubSpot creados en las últimas 24 horas, descarga la web de su dominio y pide a un modelo de OpenAI un resumen de la empresa, su sector y una puntuación de 1 a 10 según el perfil de cliente ideal. Guarda el resultado en el CRM y manda a Slack solo los leads con puntuación alta.",
+  "apps": ["HubSpot", "OpenAI", "Slack", "HTTP"],
+  "tags": ["ia", "lead scoring", "crm", "programado"],
+  "trigger": "Programado (diario, 8:00)",
+  "status": "produccion",
+  "industry": "SaaS B2B",
+  "hoursSavedPerMonth": 20,
+  "setup": [
+    "Importa el archivo en n8n.",
+    "Crea en HubSpot las propiedades personalizadas lead_score y resumen_ia.",
+    "Conecta las credenciales de HubSpot, OpenAI y Slack.",
+    "Edita el prompt del nodo de OpenAI con la descripción de tu cliente ideal."
+  ],
+  "credentials": ["HubSpot (App privada)", "OpenAI (API key)", "Slack (OAuth2)"],
+  "updated": "2026-10-15"
+}

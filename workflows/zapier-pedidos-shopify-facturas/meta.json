@@ -1,0 +1,20 @@
+{
+  "title": "Pedidos de Shopify → facturas en QuickBooks",
+  "platform": "zapier",
+  "category": "Finanzas",
+  "summary": "Genera la factura en QuickBooks por cada pedido pagado en Shopify y la envía al cliente.",
+  "description": "Cuando un pedido de Shopify pasa a pagado, el Zap busca el cliente en QuickBooks (o lo crea si no existe), genera la factura con las líneas del pedido y la envía por correo. Al final registra el pedido en Airtable para la conciliación mensual.",
+  "apps": ["Shopify", "QuickBooks Online", "Airtable"],
+  "tags": ["facturación", "e-commerce", "contabilidad"],
+  "trigger": "Nuevo pedido pagado en Shopify",
+  "status": "plantilla",
+  "industry": "E-commerce",
+  "hoursSavedPerMonth": 15,
+  "setup": [
+    "Crea un Zap nuevo y replica los pasos.",
+    "En «Find Customer» activa la opción de crear el cliente si no existe.",
+    "Mapea los line items de Shopify a las líneas de la factura."
+  ],
+  "credentials": ["Shopify", "QuickBooks Online", "Airtable"],
+  "updated": "2026-08-20"
+}

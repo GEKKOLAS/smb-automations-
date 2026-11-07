@@ -1,0 +1,21 @@
+{
+  "title": "Captación de leads web → CRM",
+  "platform": "n8n",
+  "category": "Ventas",
+  "summary": "Recibe leads del formulario web, los deduplica y los crea en HubSpot con aviso al equipo.",
+  "description": "Un webhook recibe cada envío del formulario de la web. El flujo normaliza el correo y el teléfono, busca si el contacto ya existe en HubSpot y, según el caso, lo crea o actualiza. Los leads nuevos se notifican en Slack y se guarda una copia en Google Sheets como respaldo.",
+  "apps": ["Webhook", "HubSpot", "Slack", "Google Sheets"],
+  "tags": ["leads", "crm", "deduplicación"],
+  "trigger": "Webhook (envío de formulario)",
+  "status": "produccion",
+  "industry": "Servicios profesionales",
+  "hoursSavedPerMonth": 12,
+  "setup": [
+    "Importa el archivo en n8n (Workflows → Import from file).",
+    "Conecta las credenciales de HubSpot, Slack y Google Sheets.",
+    "Copia la URL de producción del nodo Webhook en tu formulario web.",
+    "Cambia el canal de Slack y el ID de la hoja por los tuyos."
+  ],
+  "credentials": ["HubSpot (App privada)", "Slack (OAuth2)", "Google Sheets (OAuth2)"],
+  "updated": "2026-10-28"
+}

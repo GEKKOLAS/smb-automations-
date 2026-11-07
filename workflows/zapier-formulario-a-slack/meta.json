@@ -1,0 +1,20 @@
+{
+  "title": "Solicitudes de presupuesto: Typeform → Sheets + Slack",
+  "platform": "zapier",
+  "category": "Atención al cliente",
+  "summary": "Cada solicitud de presupuesto se registra en una hoja, se avisa al equipo y se responde al cliente.",
+  "description": "Cuando llega una respuesta nueva en Typeform, el Zap filtra las solicitudes de prueba, añade una fila en Google Sheets, publica un aviso en Slack y envía al cliente un correo de confirmación. Si el presupuesto indicado supera los 5.000 €, además crea una tarea urgente en Asana.",
+  "apps": ["Typeform", "Google Sheets", "Slack", "Gmail", "Asana"],
+  "tags": ["formularios", "notificaciones", "presupuestos"],
+  "trigger": "Nueva respuesta en Typeform",
+  "status": "produccion",
+  "industry": "Reformas y construcción",
+  "hoursSavedPerMonth": 6,
+  "setup": [
+    "Crea un Zap nuevo y replica los pasos en el orden indicado.",
+    "En el filtro, excluye los correos de tu dominio para ignorar pruebas internas.",
+    "Configura el Path con el campo de presupuesto de tu formulario."
+  ],
+  "credentials": ["Typeform", "Google Sheets", "Slack", "Gmail", "Asana"],
+  "updated": "2026-10-05"
+}

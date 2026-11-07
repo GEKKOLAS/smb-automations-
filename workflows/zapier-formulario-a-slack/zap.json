@@ -1,0 +1,18 @@
+{
+  "name": "Solicitudes de presupuesto: Typeform → Sheets + Slack",
+  "steps": [
+    { "type": "trigger", "app": "Typeform", "event": "New Entry", "description": "Formulario «Solicitar presupuesto»." },
+    { "type": "filter", "app": "Filter by Zapier", "event": "Only continue if…", "description": "El email no contiene @tuempresa.com." },
+    { "type": "formatter", "app": "Formatter by Zapier", "event": "Numbers → Format Number", "description": "Convierte el presupuesto a número." },
+    { "type": "action", "app": "Google Sheets", "event": "Create Spreadsheet Row", "description": "Hoja «Solicitudes», una fila por respuesta." },
+    { "type": "action", "app": "Slack", "event": "Send Channel Message", "description": "Aviso en #presupuestos con nombre, servicio e importe." },
+    { "type": "action", "app": "Gmail", "event": "Send Email", "description": "Confirmación al cliente con el plazo de respuesta." },
+    { "type": "path", "app": "Paths by Zapier", "event": "Split into paths", "branches": [
+      { "name": "Presupuesto alto", "condition": "Presupuesto > 5000", "steps": [
+        { "type": "action", "app": "Asana", "event": "Create Task", "description": "Tarea urgente asignada al jefe de obra." } ] },
+      { "name": "Resto", "condition": "Presupuesto ≤ 5000", "steps": [
+        { "type": "delay", "app": "Delay by Zapier", "event": "Delay For", "description": "Espera 2 días." },
+        { "type": "action", "app": "Gmail", "event": "Send Email", "description": "Seguimiento si no se ha cerrado." } ] }
+    ] }
+  ]
+}

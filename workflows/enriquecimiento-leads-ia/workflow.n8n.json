@@ -1,0 +1,40 @@
+{
+  "name": "Enriquecimiento y calificación de leads con IA",
+  "nodes": [
+    { "id": "1", "name": "Cada día 8:00", "type": "n8n-nodes-base.scheduleTrigger", "typeVersion": 1.2, "position": [0, 200],
+      "parameters": { "rule": { "interval": [ { "field": "cronExpression", "expression": "0 8 * * *" } ] } } },
+    { "id": "2", "name": "Leads de las últimas 24 h", "type": "n8n-nodes-base.hubspot", "typeVersion": 2, "position": [240, 200],
+      "parameters": { "resource": "contact", "operation": "getRecentlyCreatedUpdated", "returnAll": true } },
+    { "id": "3", "name": "Extraer dominio", "type": "n8n-nodes-base.code", "typeVersion": 2, "position": [480, 200],
+      "parameters": { "jsCode": "return $input.all()\n  .map(i => ({ json: { ...i.json, dominio: (i.json.properties?.email?.value || '').split('@')[1] } }))\n  .filter(i => i.json.dominio && !/gmail|hotmail|outlook|yahoo/.test(i.json.dominio));" } },
+    { "id": "4", "name": "Descargar web", "type": "n8n-nodes-base.httpRequest", "typeVersion": 4.2, "position": [720, 200],
+      "parameters": { "url": "=https://{{ $json.dominio }}", "options": { "timeout": 10000 } } },
+    { "id": "5", "name": "Analizar con IA", "type": "@n8n/n8n-nodes-langchain.openAi", "typeVersion": 1.8, "position": [960, 200],
+      "parameters": { "resource": "text", "modelId": "gpt-4o-mini", "jsonOutput": true,
+        "messages": { "values": [
+          { "role": "system", "content": "Eres analista de ventas. Cliente ideal: empresas de 10-200 empleados del sector servicios en LATAM y España. Responde JSON con: resumen, sector, puntuacion (1-10), motivo." },
+          { "content": "={{ $json.data.slice(0, 8000) }}" } ] } } },
+    { "id": "6", "name": "Guardar en CRM", "type": "n8n-nodes-base.hubspot", "typeVersion": 2, "position": [1200, 200],
+      "parameters": { "resource": "contact", "operation": "upsert", "email": "={{ $('Extraer dominio').item.json.properties.email.value }}",
+        "additionalFields": { "customPropertiesUi": { "customPropertiesValues": [
+          { "property": "lead_score", "value": "={{ $json.message.content.puntuacion }}" },
+          { "property": "resumen_ia", "value": "={{ $json.message.content.resumen }}" } ] } } } },
+    { "id": "7", "name": "¿Puntuación ≥ 7?", "type": "n8n-nodes-base.if", "typeVersion": 2, "position": [1440, 200],
+      "parameters": { "conditions": { "conditions": [ { "leftValue": "={{ $('Analizar con IA').item.json.message.content.puntuacion }}", "rightValue": 7, "operator": { "type": "number", "operation": "gte" } } ] } } },
+    { "id": "8", "name": "Lead caliente a Slack", "type": "n8n-nodes-base.slack", "typeVersion": 2.2, "position": [1680, 120],
+      "parameters": { "select": "channel", "channelId": "#leads-calientes", "text": "=🔥 {{ $('Extraer dominio').item.json.dominio }} — {{ $('Analizar con IA').item.json.message.content.puntuacion }}/10\n{{ $('Analizar con IA').item.json.message.content.motivo }}" } },
+    { "id": "9", "name": "Sin acción", "type": "n8n-nodes-base.noOp", "typeVersion": 1, "position": [1680, 300], "parameters": {} }
+  ],
+  "connections": {
+    "Cada día 8:00": { "main": [[ { "node": "Leads de las últimas 24 h", "type": "main", "index": 0 } ]] },
+    "Leads de las últimas 24 h": { "main": [[ { "node": "Extraer dominio", "type": "main", "index": 0 } ]] },
+    "Extraer dominio": { "main": [[ { "node": "Descargar web", "type": "main", "index": 0 } ]] },
+    "Descargar web": { "main": [[ { "node": "Analizar con IA", "type": "main", "index": 0 } ]] },
+    "Analizar con IA": { "main": [[ { "node": "Guardar en CRM", "type": "main", "index": 0 } ]] },
+    "Guardar en CRM": { "main": [[ { "node": "¿Puntuación ≥ 7?", "type": "main", "index": 0 } ]] },
+    "¿Puntuación ≥ 7?": { "main": [
+      [ { "node": "Lead caliente a Slack", "type": "main", "index": 0 } ],
+      [ { "node": "Sin acción", "type": "main", "index": 0 } ] ] }
+  },
+  "settings": { "executionOrder": "v1" }
+}

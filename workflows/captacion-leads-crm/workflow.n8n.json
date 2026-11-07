@@ -1,0 +1,38 @@
+{
+  "name": "Captación de leads web → CRM",
+  "nodes": [
+    { "id": "1", "name": "Formulario web", "type": "n8n-nodes-base.webhook", "typeVersion": 2, "position": [0, 200],
+      "parameters": { "httpMethod": "POST", "path": "lead-web", "responseMode": "onReceived" } },
+    { "id": "2", "name": "Normalizar datos", "type": "n8n-nodes-base.set", "typeVersion": 3.4, "position": [240, 200],
+      "parameters": { "assignments": { "assignments": [
+        { "name": "email", "value": "={{ $json.body.email.trim().toLowerCase() }}", "type": "string" },
+        { "name": "telefono", "value": "={{ $json.body.phone.replace(/\\D/g, '') }}", "type": "string" },
+        { "name": "nombre", "value": "={{ $json.body.name }}", "type": "string" },
+        { "name": "origen", "value": "web", "type": "string" } ] } } },
+    { "id": "3", "name": "Buscar contacto", "type": "n8n-nodes-base.hubspot", "typeVersion": 2, "position": [480, 200],
+      "parameters": { "resource": "contact", "operation": "search", "filterGroupsUi": { "filterGroupsValues": [ { "filtersUi": { "filterValues": [ { "propertyName": "email", "value": "={{ $json.email }}" } ] } } ] } } },
+    { "id": "4", "name": "¿Ya existe?", "type": "n8n-nodes-base.if", "typeVersion": 2, "position": [720, 200],
+      "parameters": { "conditions": { "conditions": [ { "leftValue": "={{ $json.id }}", "operator": { "type": "string", "operation": "exists" } } ] } } },
+    { "id": "5", "name": "Actualizar contacto", "type": "n8n-nodes-base.hubspot", "typeVersion": 2, "position": [960, 80],
+      "parameters": { "resource": "contact", "operation": "upsert", "email": "={{ $('Normalizar datos').item.json.email }}" } },
+    { "id": "6", "name": "Crear contacto", "type": "n8n-nodes-base.hubspot", "typeVersion": 2, "position": [960, 320],
+      "parameters": { "resource": "contact", "operation": "upsert", "email": "={{ $('Normalizar datos').item.json.email }}",
+        "additionalFields": { "firstName": "={{ $('Normalizar datos').item.json.nombre }}", "phoneNumber": "={{ $('Normalizar datos').item.json.telefono }}", "leadStatus": "NEW" } } },
+    { "id": "7", "name": "Avisar en Slack", "type": "n8n-nodes-base.slack", "typeVersion": 2.2, "position": [1200, 240],
+      "parameters": { "select": "channel", "channelId": "#ventas", "text": "=🎯 Nuevo lead: {{ $('Normalizar datos').item.json.nombre }} ({{ $('Normalizar datos').item.json.email }})" } },
+    { "id": "8", "name": "Respaldo en Sheets", "type": "n8n-nodes-base.googleSheets", "typeVersion": 4.5, "position": [1200, 400],
+      "parameters": { "operation": "append", "documentId": "TU_ID_DE_HOJA", "sheetName": "Leads" } }
+  ],
+  "connections": {
+    "Formulario web": { "main": [[ { "node": "Normalizar datos", "type": "main", "index": 0 } ]] },
+    "Normalizar datos": { "main": [[ { "node": "Buscar contacto", "type": "main", "index": 0 } ]] },
+    "Buscar contacto": { "main": [[ { "node": "¿Ya existe?", "type": "main", "index": 0 } ]] },
+    "¿Ya existe?": { "main": [
+      [ { "node": "Actualizar contacto", "type": "main", "index": 0 } ],
+      [ { "node": "Crear contacto", "type": "main", "index": 0 } ] ] },
+    "Crear contacto": { "main": [[
+      { "node": "Avisar en Slack", "type": "main", "index": 0 },
+      { "node": "Respaldo en Sheets", "type": "main", "index": 0 } ]] }
+  },
+  "settings": { "executionOrder": "v1" }
+}

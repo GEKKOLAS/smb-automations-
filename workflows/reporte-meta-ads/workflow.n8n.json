@@ -1,0 +1,32 @@
+{
+  "name": "Reporte semanal de Meta Ads y Google Ads",
+  "nodes": [
+    { "id": "1", "name": "Lunes 9:00", "type": "n8n-nodes-base.scheduleTrigger", "typeVersion": 1.2, "position": [0, 200],
+      "parameters": { "rule": { "interval": [ { "field": "cronExpression", "expression": "0 9 * * 1" } ] } } },
+    { "id": "2", "name": "Métricas Meta Ads", "type": "n8n-nodes-base.httpRequest", "typeVersion": 4.2, "position": [260, 80],
+      "parameters": { "url": "https://graph.facebook.com/v21.0/act_TU_CUENTA/insights", "authentication": "genericCredentialType", "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true, "queryParameters": { "parameters": [ { "name": "date_preset", "value": "last_week_mon_sun" }, { "name": "fields", "value": "spend,impressions,clicks,actions" } ] } } },
+    { "id": "3", "name": "Métricas Google Ads", "type": "n8n-nodes-base.googleAds", "typeVersion": 1, "position": [260, 320],
+      "parameters": { "operation": "getAll", "clientCustomerId": "TU_ID_CLIENTE", "additionalOptions": { "dateRange": "LAST_WEEK_MON_SUN" } } },
+    { "id": "4", "name": "Unir canales", "type": "n8n-nodes-base.merge", "typeVersion": 3, "position": [520, 200],
+      "parameters": { "mode": "append" } },
+    { "id": "5", "name": "Calcular KPIs", "type": "n8n-nodes-base.code", "typeVersion": 2, "position": [760, 200],
+      "parameters": { "jsCode": "const rows = $input.all().map(i => i.json);\nconst total = rows.reduce((a, r) => a + Number(r.spend || r.cost || 0), 0);\nreturn [{ json: { rows, gastoTotal: total.toFixed(2) } }];" } },
+    { "id": "6", "name": "Guardar histórico", "type": "n8n-nodes-base.googleSheets", "typeVersion": 4.5, "position": [1000, 100],
+      "parameters": { "operation": "append", "documentId": "TU_ID_DE_HOJA", "sheetName": "Ads semanal" } },
+    { "id": "7", "name": "Enviar reporte", "type": "n8n-nodes-base.gmail", "typeVersion": 2.1, "position": [1000, 300],
+      "parameters": { "sendTo": "equipo@tuempresa.com", "subject": "=Reporte de anuncios · gasto {{ $json.gastoTotal }} €", "emailType": "html", "message": "=<h2>Resumen semanal</h2><p>Gasto total: {{ $json.gastoTotal }} €</p>" } }
+  ],
+  "connections": {
+    "Lunes 9:00": { "main": [[
+      { "node": "Métricas Meta Ads", "type": "main", "index": 0 },
+      { "node": "Métricas Google Ads", "type": "main", "index": 0 } ]] },
+    "Métricas Meta Ads": { "main": [[ { "node": "Unir canales", "type": "main", "index": 0 } ]] },
+    "Métricas Google Ads": { "main": [[ { "node": "Unir canales", "type": "main", "index": 1 } ]] },
+    "Unir canales": { "main": [[ { "node": "Calcular KPIs", "type": "main", "index": 0 } ]] },
+    "Calcular KPIs": { "main": [[
+      { "node": "Guardar histórico", "type": "main", "index": 0 },
+      { "node": "Enviar reporte", "type": "main", "index": 0 } ]] }
+  },
+  "settings": { "executionOrder": "v1" }
+}

@@ -1,0 +1,11 @@
+{
+  "name": "Pedidos de Shopify → facturas en QuickBooks",
+  "steps": [
+    { "type": "trigger", "app": "Shopify", "event": "New Paid Order" },
+    { "type": "action", "app": "QuickBooks Online", "event": "Find Customer", "description": "Por email; si no existe, lo crea." },
+    { "type": "formatter", "app": "Formatter by Zapier", "event": "Utilities → Line-item to Text", "description": "Prepara las líneas del pedido." },
+    { "type": "action", "app": "QuickBooks Online", "event": "Create Invoice", "description": "Factura con las líneas, impuestos y gastos de envío." },
+    { "type": "action", "app": "QuickBooks Online", "event": "Send Invoice", "description": "Envía la factura al email del cliente." },
+    { "type": "action", "app": "Airtable", "event": "Create Record", "description": "Tabla «Conciliación»: pedido, factura e importe." }
+  ]
+}

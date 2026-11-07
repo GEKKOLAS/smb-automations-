@@ -1,0 +1,21 @@
+{
+  "title": "Reporte semanal de Meta Ads y Google Ads",
+  "platform": "n8n",
+  "category": "Marketing",
+  "summary": "Junta el gasto y los resultados de Meta Ads y Google Ads y envía un resumen semanal por correo.",
+  "description": "Cada lunes consulta la API de Meta (Graph API) y la de Google Ads, unifica las métricas de la semana anterior (gasto, impresiones, clics, conversiones y coste por resultado) y genera un correo HTML con la comparación entre canales. También deja los datos en una hoja de Google Sheets para el histórico.",
+  "apps": ["Meta Ads", "Google Ads", "Google Sheets", "Gmail"],
+  "tags": ["reportes", "publicidad", "programado"],
+  "trigger": "Programado (lunes, 9:00)",
+  "status": "piloto",
+  "industry": "E-commerce",
+  "hoursSavedPerMonth": 8,
+  "setup": [
+    "Importa el archivo en n8n.",
+    "Crea un token de sistema en Meta Business y añádelo como credencial de cabecera.",
+    "Conecta Google Ads, Google Sheets y Gmail.",
+    "Sustituye act_TU_CUENTA y el ID de cliente de Google Ads."
+  ],
+  "credentials": ["Meta Graph API (token)", "Google Ads (OAuth2)", "Google Sheets (OAuth2)", "Gmail (OAuth2)"],
+  "updated": "2026-09-30"
+}
