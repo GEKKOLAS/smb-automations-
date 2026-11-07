@@ -9,6 +9,7 @@ export interface CatalogItem {
   slug: string;
   meta: WorkflowMeta;
   steps: number;
+  hasVideo: boolean;
 }
 
 const norm = (s: string) => s.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
@@ -64,7 +65,7 @@ export function Catalog({ items }: { items: CatalogItem[] }) {
       </p>
 
       <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {filtered.map(({ slug, meta, steps }) => (
+        {filtered.map(({ slug, meta, steps, hasVideo }) => (
           <li key={slug}>
             <Link
               href={`/workflows/${slug}`}
@@ -83,7 +84,7 @@ export function Catalog({ items }: { items: CatalogItem[] }) {
                 ))}
               </div>
               <div className="mt-4 flex justify-between border-t border-border pt-3 text-xs text-muted">
-                <span>{steps} pasos</span>
+                <span>{steps} pasos{hasVideo ? " · ▶ video" : ""}</span>
                 {meta.hoursSavedPerMonth ? <span>~{meta.hoursSavedPerMonth} h/mes ahorradas</span> : null}
               </div>
             </Link>

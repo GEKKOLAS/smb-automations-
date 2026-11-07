@@ -35,6 +35,32 @@ for (const slug of slugs) {
   const wf = readJson(slug, file);
   if (!wf) continue;
 
+  const ids = new Set();
+  if (meta.platform === "n8n") {
+    (wf.nodes ?? []).forEach((n) => ids.add(n.name));
+  } else {
+    const collect = (steps, prefix) =>
+      (steps ?? []).forEach((s, i) => {
+        const id = prefix ? `${prefix}.${i + 1}` : `${i + 1}`;
+        ids.add(id);
+        (s.branches ?? []).forEach((b, bi) => collect(b.steps, `${id}.${bi + 1}`));
+      });
+    collect(wf.steps, "");
+  }
+
+  const demoFile = path.join(dir, "demo.json");
+  if (fs.existsSync(demoFile)) {
+    const demo = readJson(slug, demoFile);
+    if (demo) {
+      if (!Array.isArray(demo.scenes) || !demo.scenes.length) err(slug, "demo.json: «scenes» debe ser una lista con al menos un paso");
+      (demo.scenes ?? []).forEach((sc, i) => {
+        if (!sc.caption) err(slug, `demo.json paso ${i + 1}: falta «caption»`);
+        for (const id of [].concat(sc.node ?? []))
+          if (!ids.has(id)) err(slug, `demo.json paso ${i + 1}: el nodo «${id}» no existe en el flujo`);
+      });
+    }
+  }
+
   if (meta.platform === "n8n") {
     if (!Array.isArray(wf.nodes) || !wf.nodes.length) { err(slug, "el flujo n8n no tiene nodos"); continue; }
     const names = new Set(wf.nodes.map((n) => n.name));

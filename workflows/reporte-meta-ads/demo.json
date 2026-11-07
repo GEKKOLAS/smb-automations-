@@ -1,0 +1,15 @@
+{
+  "intro": "Cada lunes, el gasto y los resultados de Meta Ads y Google Ads llegan juntos en un solo correo.",
+  "scenes": [
+    { "node": "Lunes 9:00", "caption": "Lunes a las 9:00: arranca el reporte de la semana anterior.",
+      "data": { "periodo": "2026-11-02 → 2026-11-08" } },
+    { "node": ["Métricas Meta Ads", "Métricas Google Ads"], "caption": "Se consultan las dos plataformas de anuncios a la vez.",
+      "data": { "meta": { "gasto": 412.5, "clics": 1830, "conversiones": 41 }, "google": { "gasto": 365.0, "clics": 1204, "conversiones": 37 } } },
+    { "node": "Unir canales", "caption": "Los resultados de ambos canales se juntan en una sola lista.",
+      "data": { "filas": 2, "canales": ["Meta Ads", "Google Ads"] } },
+    { "node": "Calcular KPIs", "caption": "Se calcula el gasto total y el coste por conversión de cada canal.",
+      "data": { "gastoTotal": "777.50 €", "cpa_meta": "10.06 €", "cpa_google": "9.86 €" } },
+    { "node": ["Guardar histórico", "Enviar reporte"], "caption": "Los datos quedan en Google Sheets y el equipo recibe el resumen por correo.",
+      "data": { "sheets": "Fila añadida a «Ads semanal»", "gmail": "Reporte de anuncios · gasto 777.50 €" } }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "intro": "Cada mañana, la IA investiga los leads nuevos y avisa solo de los que encajan con el cliente ideal.",
+  "scenes": [
+    { "node": "Cada día 8:00", "caption": "Son las 8:00: el flujo se ejecuta solo, sin que nadie lo lance.",
+      "data": { "ejecucion": "2026-11-09T08:00:00", "programa": "0 8 * * *" } },
+    { "node": "Leads de las últimas 24 h", "caption": "Recupera de HubSpot los contactos creados desde ayer.",
+      "data": [ "carlos@estudiolumen.com", "maria.p@gmail.com", "jorge@logistica-norte.co" ] },
+    { "node": "Extraer dominio", "caption": "Saca el dominio de cada email y descarta los correos personales (Gmail, Outlook…).",
+      "data": [ { "dominio": "estudiolumen.com" }, { "dominio": "logistica-norte.co" } ] },
+    { "node": "Descargar web", "caption": "Descarga la página de inicio de cada empresa para saber a qué se dedica.",
+      "data": { "url": "https://logistica-norte.co", "estado": 200, "tamaño": "48 KB" } },
+    { "node": "Analizar con IA", "caption": "OpenAI resume la empresa y la puntúa del 1 al 10 según el perfil de cliente ideal.",
+      "data": { "sector": "Logística", "empleados": "≈80", "puntuacion": 8, "motivo": "Empresa de servicios en LATAM con equipo comercial" } },
+    { "node": "Guardar en CRM", "caption": "La puntuación y el resumen se guardan en el contacto de HubSpot.",
+      "data": { "lead_score": 8, "resumen_ia": "Operador logístico con 80 empleados en Colombia…" } },
+    { "node": "¿Puntuación ≥ 7?", "caption": "Un 8 supera el umbral, así que el lead pasa por la rama «sí».",
+      "data": { "puntuacion": 8, "umbral": 7, "rama": "sí" } },
+    { "node": "Lead caliente a Slack", "caption": "El equipo recibe en #leads-calientes solo los leads que merecen una llamada hoy.",
+      "data": "🔥 logistica-norte.co — 8/10\nEmpresa de servicios en LATAM con equipo comercial" }
+  ]
+}

@@ -5,6 +5,7 @@ Biblioteca de flujos de trabajo de automatización con **n8n** y **Zapier** para
 - **Catálogo** con búsqueda (por app, objetivo o etiqueta) y filtros por plataforma y área.
 - **Diagrama de n8n** dibujado a partir del JSON exportado, con las posiciones reales del editor.
 - **Zaps de Zapier** como lista de pasos, con filtros, rutas (paths) y esperas.
+- **Video de cada flujo**: una simulación animada en la que los datos de ejemplo recorren el flujo paso a paso, con la explicación de cada nodo. Se genera automáticamente como MP4 y también se puede ver en vivo a pantalla completa (`/demo/<slug>`).
 - **Descarga / copia** del JSON de cada flujo.
 - **Validación** automática de la biblioteca antes de cada build.
 
@@ -15,6 +16,7 @@ npm install
 npm run dev        # http://localhost:3000
 npm run validate   # comprueba todos los flujos
 npm run build      # valida y genera el sitio estático en out/
+npm run videos     # genera los videos de todos los flujos y recompila
 ```
 
 El build es una exportación estática (`out/`), así que se puede desplegar en Vercel, Netlify, GitHub Pages o cualquier hosting estático.
@@ -29,10 +31,12 @@ workflows/
   zapier-formulario-a-slack/
     meta.json
     zap.json             # pasos del Zap (esquema propio, ver abajo)
-app/                     # páginas (Next.js App Router)
-components/              # catálogo, diagrama n8n, pasos de Zapier
-lib/                     # tipos, carga de flujos, grafo de n8n
-scripts/validate-workflows.mjs
+    demo.json            # guion de la simulación / video (opcional)
+app/                     # páginas (Next.js App Router); /demo/<slug> = simulación a pantalla completa
+components/              # catálogo, diagramas, reproductor de la simulación
+lib/                     # tipos, carga de flujos, grafo n8n/Zapier, línea de tiempo de la demo
+public/videos/           # videos generados
+scripts/                 # validación y generación de videos
 ```
 
 ## Añadir un flujo
@@ -76,6 +80,28 @@ scripts/validate-workflows.mjs
    ```
    `status`: `produccion`, `piloto` o `plantilla`. `industry`, `hoursSavedPerMonth`, `setup` y `credentials` son opcionales.
 4. Ejecuta `npm run validate`.
+
+## Videos de los flujos
+
+Cada flujo tiene una simulación: el diagrama se anima paso a paso, los datos de ejemplo viajan por las conexiones y abajo se explica qué hace cada nodo. La simulación se define en `workflows/<slug>/demo.json`:
+
+```json
+{
+  "intro": "Frase que aparece en la portada del video.",
+  "scenes": [
+    { "node": "Formulario web", "caption": "Llega un lead desde la web…", "data": { "email": "ana@acme.co" } },
+    { "node": ["Avisar en Slack", "Respaldo en Sheets"], "caption": "Dos nodos que se ejecutan a la vez." }
+  ]
+}
+```
+
+- `node`: en n8n, el nombre del nodo; en Zapier, el número del paso (`"3"`), y dentro de una ruta `paso.rama.paso` (`"7.1.1"` = paso 7, primera rama, primer paso). Puede ser una lista para pasos en paralelo.
+- `data` (opcional): los datos de ejemplo que se muestran en ese paso.
+- Si un flujo no tiene `demo.json`, se genera un recorrido automático a partir del diagrama.
+
+`npm run videos` graba cada simulación fotograma a fotograma (1920×1080, 30 fps) y guarda `public/videos/<slug>.mp4` y su portada `.jpg`; la página del flujo muestra el video en cuanto existe. Para regenerar solo algunos: `npm run build && npm run videos:render -- captacion-leads-crm`. Opciones: `--theme light|dark`, `--fps`, `--scale`.
+
+Requisitos: **ffmpeg** (en el PATH o en `FFMPEG_PATH`) y Chromium para Playwright (`npx playwright install chromium`).
 
 ## Stack
 

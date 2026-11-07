@@ -63,4 +63,8 @@ export interface Workflow {
   raw: string;
   definition: N8nWorkflow | ZapierWorkflow;
   fileName: string;
+  /** Guion de la simulación (demo.json o generado a partir del grafo). */
+  demo: import("./demo").DemoScript;
+  /** Ruta pública del video generado, si existe (public/videos/<slug>.mp4). */
+  video?: string;
 }

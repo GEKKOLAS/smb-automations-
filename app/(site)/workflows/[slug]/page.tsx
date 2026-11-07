@@ -1,11 +1,13 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { DemoPlayer } from "@/components/DemoPlayer";
 import { JsonActions } from "@/components/JsonActions";
 import { N8nDiagram } from "@/components/N8nDiagram";
 import { PlatformBadge, StatusBadge } from "@/components/PlatformBadge";
 import { ZapierSteps } from "@/components/ZapierSteps";
 import type { N8nWorkflow, ZapierWorkflow } from "@/lib/types";
+import { workflowGraph } from "@/lib/graph";
 import { countSteps, getWorkflow, getWorkflows } from "@/lib/workflows";
 
 type Params = { params: Promise<{ slug: string }> };
@@ -44,6 +46,37 @@ export default async function WorkflowPage({ params }: Params) {
         <div><dt className="text-muted">Ahorro estimado</dt><dd className="font-medium">{meta.hoursSavedPerMonth ? `~${meta.hoursSavedPerMonth} h/mes` : "—"}</dd></div>
         <div><dt className="text-muted">Actualizado</dt><dd className="font-medium">{meta.updated}</dd></div>
       </dl>
+
+      <section className="mb-10">
+        <div className="mb-4 flex flex-wrap items-baseline justify-between gap-3">
+          <h2 className="text-lg font-semibold">Cómo funciona</h2>
+          <div className="flex gap-4 text-sm">
+            {w.video && (
+              <a href={w.video} download className="text-muted hover:text-text">Descargar video ↓</a>
+            )}
+            <Link href={`/demo/${w.slug}`} className="text-muted hover:text-text">Ver a pantalla completa ↗</Link>
+          </div>
+        </div>
+        {w.video ? (
+          <video
+            src={w.video}
+            poster={w.video.replace(/\.mp4$/, ".jpg")}
+            controls
+            playsInline
+            preload="metadata"
+            className="aspect-video w-full rounded-xl border border-border bg-surface-2"
+          />
+        ) : (
+          <DemoPlayer
+            graph={workflowGraph(w)}
+            script={w.demo}
+            title={meta.title}
+            platform={meta.platform}
+            apps={meta.apps}
+            hoursSavedPerMonth={meta.hoursSavedPerMonth}
+          />
+        )}
+      </section>
 
       <section className="mb-10">
         <h2 className="mb-4 text-lg font-semibold">Flujo</h2>

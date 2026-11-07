@@ -1,0 +1,21 @@
+{
+  "intro": "Cada solicitud de presupuesto se registra, se avisa al equipo y el cliente recibe respuesta al instante.",
+  "scenes": [
+    { "node": "1", "caption": "Laura Méndez pide presupuesto para reformar su cocina desde el formulario de Typeform.",
+      "data": { "nombre": "Laura Méndez", "email": "laura.mendez@correo.com", "servicio": "Reforma de cocina", "presupuesto": "8.500 €" } },
+    { "node": "2", "caption": "El filtro comprueba que no sea una prueba interna (el email no es del dominio de la empresa).",
+      "data": { "email": "laura.mendez@correo.com", "pasa_filtro": true } },
+    { "node": "3", "caption": "Formatter convierte «8.500 €» en un número para poder compararlo después.",
+      "data": { "entrada": "8.500 €", "salida": 8500 } },
+    { "node": "4", "caption": "Se añade una fila con la solicitud en la hoja «Solicitudes».",
+      "data": { "hoja": "Solicitudes", "fila": 132 } },
+    { "node": "5", "caption": "El equipo recibe el aviso en #presupuestos con el nombre, el servicio y el importe.",
+      "data": "📋 Laura Méndez · Reforma de cocina · 8500 €" },
+    { "node": "6", "caption": "Laura recibe un correo confirmando que la contactarán en menos de 24 horas.",
+      "data": { "para": "laura.mendez@correo.com", "asunto": "Hemos recibido tu solicitud" } },
+    { "node": "7", "caption": "Paths decide la ruta según el importe: 8500 € es mayor que 5000 €.",
+      "data": { "presupuesto": 8500, "ruta": "Presupuesto alto" } },
+    { "node": "7.1.1", "caption": "Se crea una tarea urgente en Asana para que el jefe de obra llame hoy mismo.",
+      "data": { "tarea": "Llamar a Laura Méndez – cocina 8500 €", "prioridad": "Alta" } }
+  ]
+}

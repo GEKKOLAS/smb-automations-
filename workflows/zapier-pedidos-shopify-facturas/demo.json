@@ -1,0 +1,17 @@
+{
+  "intro": "Cada pedido pagado en la tienda se convierte en una factura enviada y registrada, sin tocar la contabilidad a mano.",
+  "scenes": [
+    { "node": "1", "caption": "Llega un pedido pagado en Shopify: 2 productos, 96,40 € con envío.",
+      "data": { "pedido": "#1047", "cliente": "pablo.rios@correo.com", "total": "96.40 EUR", "lineas": 2 } },
+    { "node": "2", "caption": "Se busca al cliente en QuickBooks por su email; como no existe, se crea.",
+      "data": { "email": "pablo.rios@correo.com", "encontrado": false, "creado": "Cliente 312" } },
+    { "node": "3", "caption": "Las líneas del pedido se preparan con el formato que espera QuickBooks.",
+      "data": [ "Taza cerámica ×2 — 24.00", "Molinillo manual ×1 — 62.40" ] },
+    { "node": "4", "caption": "Se genera la factura con impuestos y gastos de envío.",
+      "data": { "factura": "INV-2026-0418", "subtotal": 86.4, "envio": 10.0, "total": 96.4 } },
+    { "node": "5", "caption": "La factura se envía automáticamente al email del cliente.",
+      "data": { "para": "pablo.rios@correo.com", "estado": "Enviada" } },
+    { "node": "6", "caption": "Queda registrada en Airtable para la conciliación de fin de mes.",
+      "data": { "tabla": "Conciliación", "pedido": "#1047", "factura": "INV-2026-0418" } }
+  ]
+}

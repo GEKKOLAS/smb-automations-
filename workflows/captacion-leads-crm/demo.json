@@ -1,0 +1,17 @@
+{
+  "intro": "Un lead rellena el formulario de la web y, en segundos, ya está en el CRM y el equipo de ventas lo sabe.",
+  "scenes": [
+    { "node": "Formulario web", "caption": "Ana Gómez pide información desde la web. El formulario envía sus datos al webhook de n8n.",
+      "data": { "name": "Ana Gómez", "email": "  Ana.Gomez@Acme.co ", "phone": "+57 (310) 555-0142", "message": "Quiero una demo" } },
+    { "node": "Normalizar datos", "caption": "Se limpian los datos: el email pasa a minúsculas sin espacios y el teléfono queda solo con dígitos.",
+      "data": { "nombre": "Ana Gómez", "email": "ana.gomez@acme.co", "telefono": "573105550142", "origen": "web" } },
+    { "node": "Buscar contacto", "caption": "Se busca en HubSpot si ya existe un contacto con ese email, para no crear duplicados.",
+      "data": { "busqueda": "email = ana.gomez@acme.co", "resultados": 0 } },
+    { "node": "¿Ya existe?", "caption": "No hay coincidencias, así que el flujo toma la rama «no»: es un lead nuevo.",
+      "data": { "existe": false, "rama": "no" } },
+    { "node": "Crear contacto", "caption": "Se crea el contacto en HubSpot con estado NEW y origen «web».",
+      "data": { "id": "hs_98321", "firstname": "Ana Gómez", "hs_lead_status": "NEW" } },
+    { "node": ["Avisar en Slack", "Respaldo en Sheets"], "caption": "A la vez, se avisa al equipo en #ventas y se guarda una copia en Google Sheets.",
+      "data": { "slack": "🎯 Nuevo lead: Ana Gómez (ana.gomez@acme.co)", "sheets": "Fila 248 añadida a «Leads»" } }
+  ]
+}

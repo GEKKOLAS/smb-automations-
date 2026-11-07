@@ -13,6 +13,7 @@
   --ai: #7a5af8;
   --logic: #d08a12;
   --action: #3b6fd8;
+  --flow: #ea4b71;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -27,6 +28,7 @@
     --ai: #9b84ff;
     --logic: #e9a53a;
     --action: #6b97ef;
+    --flow: #ff6b8e;
   }
 }
 

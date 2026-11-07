@@ -1,5 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
+import { autoScript, type DemoScript } from "./demo";
+import { workflowGraph } from "./graph";
 import type { N8nWorkflow, Workflow, WorkflowMeta, ZapierWorkflow } from "./types";
 
 const ROOT = path.join(process.cwd(), "workflows");
@@ -22,7 +24,14 @@ export function getWorkflows(): Workflow[] {
       const fileName = FILE_BY_PLATFORM[meta.platform];
       const raw = fs.readFileSync(path.join(dir, fileName), "utf8");
       const definition = JSON.parse(raw) as N8nWorkflow | ZapierWorkflow;
-      return { slug, meta, raw, definition, fileName };
+      const demoFile = path.join(dir, "demo.json");
+      const demo = fs.existsSync(demoFile)
+        ? (JSON.parse(fs.readFileSync(demoFile, "utf8")) as DemoScript)
+        : autoScript(workflowGraph({ meta, definition }));
+      const video = fs.existsSync(path.join(process.cwd(), "public", "videos", `${slug}.mp4`))
+        ? `/videos/${slug}.mp4`
+        : undefined;
+      return { slug, meta, raw, definition, fileName, demo, video };
     })
     .sort((a, b) => b.meta.updated.localeCompare(a.meta.updated));
   return cache;

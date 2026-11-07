@@ -3,7 +3,7 @@ import { countSteps, getWorkflows } from "@/lib/workflows";
 
 export default function Home() {
   const workflows = getWorkflows();
-  const items = workflows.map((w) => ({ slug: w.slug, meta: w.meta, steps: countSteps(w) }));
+  const items = workflows.map((w) => ({ slug: w.slug, meta: w.meta, steps: countSteps(w), hasVideo: Boolean(w.video) }));
   const hours = workflows.reduce((a, w) => a + (w.meta.hoursSavedPerMonth ?? 0), 0);
   const n8n = workflows.filter((w) => w.meta.platform === "n8n").length;
 
