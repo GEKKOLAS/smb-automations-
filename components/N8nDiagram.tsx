@@ -29,9 +29,8 @@ export function N8nDiagram({ workflow }: { workflow: N8nWorkflow }) {
       <div className="overflow-x-auto rounded-xl border border-border bg-surface-2">
         <svg
           viewBox={`0 0 ${width} ${height}`}
-          width={width}
-          height={height}
-          className="max-w-none"
+          // Se ajusta al ancho disponible; en pantallas estrechas mantiene un mínimo legible y hace scroll.
+          style={{ width: "100%", height: "auto", minWidth: Math.min(width, 900) }}
           role="img"
           aria-label={`Diagrama del flujo ${workflow.name ?? ""}`}
         >
@@ -66,9 +65,12 @@ export function N8nDiagram({ workflow }: { workflow: N8nWorkflow }) {
                   markerEnd="url(#arrow)"
                 />
                 {label && (
-                  <text x={x1 + 10} y={y1 + (y2 > y1 ? 16 : -8)} fontSize={11} fill="var(--muted)">
-                    {label}
-                  </text>
+                  <g transform={`translate(${(x1 + x2) / 2},${(y1 + y2) / 2})`}>
+                    <rect x={-16} y={-10} width={32} height={20} rx={10} fill="var(--surface)" stroke="var(--border)" />
+                    <text textAnchor="middle" dominantBaseline="central" fontSize={11} fill="var(--muted)">
+                      {label}
+                    </text>
+                  </g>
                 )}
               </g>
             );
